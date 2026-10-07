@@ -11,7 +11,7 @@ Worker forwards the upload. It doesn't store anything.
 3. Click **Edit code**, replace everything with the contents of `roblox-proxy.js`, then **Deploy**.
 4. Go to the worker's **Settings** → **Variables and Secrets** → **Add**:
    - Name: `ALLOWED_ORIGINS`
-   - Value: `https://fmubin463s-ux.github.io` (add your custom domain later, comma-separated)
+   - Value: `https://lnz-std.github.io` (add your custom domain later, comma-separated)
 5. Copy the worker URL (looks like `https://lnz-upload.<your-name>.workers.dev`).
 6. Paste it into `assets/js/data.js`:
 

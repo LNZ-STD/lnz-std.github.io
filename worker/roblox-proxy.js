@@ -12,7 +12,7 @@
  *
  * Env vars
  *   ALLOWED_ORIGINS  comma-separated list, e.g.
- *                    "https://fmubin463s-ux.github.io,https://lnzstd.my.id"
+ *                    "https://lnz-std.github.io,https://lnzstd.my.id"
  */
 
 const OPEN_CLOUD = "https://apis.roblox.com/assets/v1";
