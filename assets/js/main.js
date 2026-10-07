@@ -64,16 +64,20 @@ function applySiteLinks() {
   if (year) year.textContent = new Date().getFullYear();
 }
 
+function thumb(item, extraClass = "") {
+  const children = [];
+  if (item.image) children.push(el("img", { class: "card__img", src: item.image, alt: "", loading: "lazy" }));
+  children.push(el("span", { class: "card__id", text: item.id }), el("span", { class: "card__cat", text: item.category }));
+  return el("div", { class: `card__thumb ${extraClass}`.trim() }, children);
+}
+
 function renderProducts() {
   const grid = document.getElementById("product-grid");
   if (!grid) return;
   PRODUCTS.forEach((p) => {
     grid.append(
       el("article", { class: "card" }, [
-        el("div", { class: "card__thumb" }, [
-          el("span", { class: "card__id", text: p.id }),
-          el("span", { class: "card__cat", text: p.category }),
-        ]),
+        thumb(p),
         el("div", { class: "card__body" }, [
           el("h3", { class: "card__title", text: p.name }),
           el("p", { class: "card__desc", text: p.description }),
@@ -100,10 +104,7 @@ function renderFreeAssets() {
 
     grid.append(
       el("article", { class: "card card--free" }, [
-        el("div", { class: "card__thumb card__thumb--free" }, [
-          el("span", { class: "card__id", text: a.id }),
-          el("span", { class: "card__cat", text: a.category }),
-        ]),
+        thumb(a, "card__thumb--free"),
         el("div", { class: "card__body" }, [
           el("h3", { class: "card__title", text: a.name }),
           el("p", { class: "card__desc", text: a.description }),

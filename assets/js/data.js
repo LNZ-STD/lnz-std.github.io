@@ -20,14 +20,16 @@ const SITE = {
 
 // Paid products — "buyUrl" goes to the external checkout page.
 // The platform handles payment, file delivery and license keys.
+// "image" is the card cover (4:3). Placeholder covers live in assets/img/products/.
 const PRODUCTS = [
   {
     id: "P01",
     name: "LNZ.STD Music System",
     category: "System",
     price: "TBA",
-    description: "An in-game music system for Roblox experiences, built by Leinze Studio.",
+    description: "Background music for your game with a clean player UI: play, pause, skip, volume and a playlist you set up in minutes.",
     license: "Licensed — see terms",
+    image: "assets/img/products/music-system.svg",
     buyUrl: "https://eiserleinze.gumroad.com/l/music-system",
   },
   {
@@ -35,8 +37,9 @@ const PRODUCTS = [
     name: "LNZ.STD Donate Effect",
     category: "Effect",
     price: "TBA",
-    description: "Visual effects that play when a player donates in your game.",
+    description: "Make every donation feel big. An on-screen effect with the donor's name and amount that the whole server can see.",
     license: "Licensed — see terms",
+    image: "assets/img/products/donate-effect.svg",
     buyUrl: "https://eiserleinze.gumroad.com/l/donate-effect",
   },
   {
@@ -44,8 +47,9 @@ const PRODUCTS = [
     name: "LNZ.STD Shop",
     category: "System",
     price: "TBA",
-    description: "A shop system for selling items in your Roblox game.",
+    description: "A ready-made in-game shop with item grid, prices and purchase flow. Add your own items and start selling.",
     license: "Licensed — see terms",
+    image: "assets/img/products/shop.svg",
     buyUrl: "https://eiserleinze.gumroad.com/l/shop",
   },
   {
@@ -53,8 +57,9 @@ const PRODUCTS = [
     name: "LNZ.STD Title",
     category: "System",
     price: "TBA",
-    description: "A title system for showing player titles in your Roblox game.",
+    description: "Custom titles above player names. Reward VIPs, donors and veterans with a tag everyone notices.",
     license: "Licensed — see terms",
+    image: "assets/img/products/title.svg",
     buyUrl: "https://eiserleinze.gumroad.com/l/title",
   },
 ];
@@ -65,7 +70,8 @@ const FREE_ASSETS = [
     id: "F01",
     name: "LNZ.STD Loading Screen",
     category: "UI",
-    description: "A clean loading screen for your Roblox game, styled by Leinze Studio.",
+    description: "A clean, branded loading screen with a progress bar. Drop it in and give your game a polished first impression.",
+    image: "assets/img/products/loading-screen.svg",
     downloadUrl: "#",
   },
 ];
