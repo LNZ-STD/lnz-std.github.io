@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Audio Uploader — LNZ.STD</title>
+  <meta name="description" content="Cut, change speed and pitch, add a cover and upload audio to Roblox. Free for LNZ.STD members.">
+  <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;1,9..144,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="nav">
+    <div class="wrap">
+      <a class="brand" href="index.html" aria-label="LNZ Studio — home">
+        <svg class="brand__mark" viewBox="0 0 272 100" aria-hidden="true"><g fill="currentColor"><polygon points="0,0 22,0 22,78 80,78 80,100 0,100"/><polygon points="96,0 118,0 118,100 96,100"/><polygon points="154,0 176,0 176,100 154,100"/><polygon points="96,0 122,0 176,100 150,100"/><polygon points="192,0 272,0 272,22 192,22"/><polygon points="192,78 272,78 272,100 192,100"/><polygon points="246,22 272,22 218,78 192,78"/></g></svg>
+        <span class="brand__sub">STUDIO</span>
+      </a>
+      <button class="nav__toggle" type="button" aria-expanded="false" aria-controls="nav-links">Menu</button>
+      <ul class="nav__links" id="nav-links">
+        <li><a href="index.html#products">Products</a></li>
+        <li><a href="index.html#free">Free Assets</a></li>
+        <li><a href="tools.html" aria-current="page">Tools</a></li>
+        <li><a href="license.html">License</a></li>
+        <li><a href="index.html#about">About</a></li>
+        <li><a href="register.html">Register</a></li>
+      </ul>
+    </div>
+  </header>
+
+  <main>
+    <section class="page-head">
+      <div class="wrap">
+        <span class="mono">Developer tools — free for members</span>
+        <h1>Audio Uploader</h1>
+        <p class="page-head__lede">Cut, change speed and pitch, add a cover, then upload straight to Roblox and get your asset IDs.</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="wrap">
+        <div class="locked" id="tool-locked" hidden>
+          <span class="mono accent">Members only</span>
+          <h2>Join and register to use the tools</h2>
+          <p>Every registered member gets <strong>20 free uploads</strong> to Roblox. Editing and MP3 download are unlimited.</p>
+          <div class="hero__cta">
+            <a class="btn btn--ghost" data-link="discord" href="#" target="_blank" rel="noopener">1. Join Discord ↗</a>
+            <a class="btn btn--accent" href="register.html">2. Register</a>
+          </div>
+        </div>
+
+        <div id="tool" hidden>
+          <div class="tool-bar">
+            <span class="mono" id="tool-member"></span>
+            <span class="quota"><strong id="quota-left">0</strong> / <span id="quota-total">0</span> free uploads left</span>
+          </div>
+
+          <div class="tool-layout">
+            <div class="tool-main">
+              <div class="panel">
+                <div class="panel__head"><span class="step__n">01</span><h2>Audio</h2></div>
+                <label class="dropzone" id="audio-drop">
+                  <input type="file" id="audio-file" accept=".mp3,.ogg,audio/mpeg,audio/ogg" hidden>
+                  <span class="dropzone__title">Drop an MP3 or OGG here</span>
+                  <span class="dropzone__sub">or click to choose a file</span>
+                </label>
+                <p class="form__msg form__msg--err" id="file-error" hidden></p>
+                <div id="editor" hidden>
+                  <div class="file-row">
+                    <div><strong id="file-name"></strong> <span class="mono" id="file-meta"></span></div>
+                    <button class="linklike" type="button" id="change-file">Change file</button>
+                  </div>
+                  <canvas class="wave" id="wave" aria-label="Waveform. Drag the handles to cut."></canvas>
+                  <div class="trim-row">
+                    <div class="field">
+                      <label for="trim-start">Start (sec)</label>
+                      <input id="trim-start" type="number" step="0.1" min="0">
+                    </div>
+                    <button class="btn btn--accent" id="play" type="button" disabled>▶ Play</button>
+                    <div class="field">
+                      <label for="trim-end">End (sec)</label>
+                      <input id="trim-end" type="number" step="0.1" min="0">
+                    </div>
+                  </div>
+                  <p class="hint">Drag the white handles to cut. Play previews the result with all your settings.</p>
+                </div>
+              </div>
+
+              <div class="panel">
+                <div class="panel__head"><span class="step__n">02</span><h2>Speed &amp; pitch</h2></div>
+                <div class="slider">
+                  <label for="speed">Speed</label>
+                  <input type="range" id="speed" min="0.5" max="2" step="0.01" value="1">
+                  <output id="speed-out">1.00×</output>
+                </div>
+                <div class="slider">
+                  <label for="pitch">Pitch</label>
+                  <input type="range" id="pitch" min="-12" max="12" step="1" value="0">
+                  <output id="pitch-out">0 st</output>
+                </div>
+                <label class="check">
+                  <input type="checkbox" id="link" checked>
+                  <span>Link pitch to speed (classic / nightcore). Untick to change speed and pitch separately.</span>
+                </label>
+                <div class="adjust-row">
+                  <div class="field">
+                    <label for="fade-in">Fade in (sec)</label>
+                    <input id="fade-in" type="number" min="0" max="10" step="0.1" value="0">
+                  </div>
+                  <div class="field">
+                    <label for="fade-out">Fade out (sec)</label>
+                    <input id="fade-out" type="number" min="0" max="10" step="0.1" value="0">
+                  </div>
+                  <button class="btn btn--ghost" type="button" id="reset-adjust">Reset</button>
+                </div>
+                <p class="mono" id="out-length"></p>
+                <p class="mono accent" id="render-status" aria-live="polite"></p>
+              </div>
+
+              <div class="panel">
+                <div class="panel__head"><span class="step__n">03</span><h2>Cover <span class="opt">optional</span></h2></div>
+                <div class="cover-row">
+                  <label class="dropzone dropzone--cover" id="cover-drop">
+                    <input type="file" id="cover-file" accept="image/png,image/jpeg,image/webp" hidden>
+                    <img id="cover-preview" alt="Cover preview" hidden>
+                    <span class="dropzone__sub" id="cover-empty">Drop an image<br>or click</span>
+                  </label>
+                  <div>
+                    <p class="hint">Cropped to a 512×512 square. Roblox audio has no built-in cover, so the image is uploaded as its own asset and you get a separate Image ID for your Music System.</p>
+                    <button class="btn btn--ghost" id="cover-remove" type="button" hidden>Remove cover</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <aside class="tool-side">
+              <form class="panel form-panel" id="upload-form" autocomplete="off">
+                <div class="panel__head"><span class="step__n">04</span><h2>Upload to Roblox</h2></div>
+                <div class="field">
+                  <label for="roblox-user">Roblox username</label>
+                  <input id="roblox-user" name="roblox-user" required>
+                  <small>The account that owns the API key.</small>
+                </div>
+                <div class="field">
+                  <label for="api-key">Open Cloud API key</label>
+                  <div class="input-group">
+                    <input id="api-key" name="api-key" type="password" required spellcheck="false">
+                    <button class="btn btn--ghost" type="button" id="toggle-key">Show</button>
+                  </div>
+                  <small>Sent only to Roblox through our relay. Never stored on a server.</small>
+                </div>
+                <label class="check">
+                  <input type="checkbox" id="remember">
+                  <span>Remember key on this device (only on your own computer)</span>
+                </label>
+                <div class="field">
+                  <label for="asset-name">Asset name</label>
+                  <input id="asset-name" name="asset-name" maxlength="50" required>
+                </div>
+                <div class="field">
+                  <label for="asset-desc">Description <span class="opt">optional</span></label>
+                  <textarea id="asset-desc" name="asset-desc" maxlength="1000" rows="3"></textarea>
+                </div>
+                <button class="btn btn--accent" type="submit" id="upload-btn" disabled>Upload to Roblox</button>
+                <button class="btn btn--ghost" type="button" id="download-btn" disabled>Download MP3 only</button>
+                <p class="hint">Each Roblox upload uses 1 free upload. Downloading the MP3 is unlimited.</p>
+                <div class="log" id="log" aria-live="polite"></div>
+              </form>
+
+              <div class="panel result" id="result" hidden>
+                <span class="mono accent">Uploaded</span>
+                <h3 id="result-name"></h3>
+                <div id="result-ids"></div>
+                <p class="hint">New audio can take a few minutes to pass Roblox moderation before it plays in game.</p>
+              </div>
+
+              <details class="panel help">
+                <summary>How do I get an Open Cloud API key?</summary>
+                <ol>
+                  <li>Open <a href="https://create.roblox.com/dashboard/credentials" target="_blank" rel="noopener">Creator Hub → API Keys</a> and click <strong>Create API Key</strong>.</li>
+                  <li>Name it, e.g. <em>LNZ Uploader</em>.</li>
+                  <li>Under <strong>Access Permissions</strong>, add the <strong>Assets</strong> API and tick <strong>Read</strong> and <strong>Write</strong>.</li>
+                  <li>Under <strong>Accepted IP Addresses</strong>, add <code>0.0.0.0/0</code>.</li>
+                  <li>Save, copy the key and paste it above.</li>
+                </ol>
+              </details>
+
+              <div class="panel" id="history-panel" hidden>
+                <span class="mono">Your uploads</span>
+                <ul class="history" id="history"></ul>
+              </div>
+            </aside>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap">
+      <div class="footer__grid">
+        <div>
+          <a class="brand" href="index.html" aria-label="LNZ Studio — home">
+            <svg class="brand__mark" viewBox="0 0 272 100" aria-hidden="true"><g fill="currentColor"><polygon points="0,0 22,0 22,78 80,78 80,100 0,100"/><polygon points="96,0 118,0 118,100 96,100"/><polygon points="154,0 176,0 176,100 154,100"/><polygon points="96,0 122,0 176,100 150,100"/><polygon points="192,0 272,0 272,22 192,22"/><polygon points="192,78 272,78 272,100 192,100"/><polygon points="246,22 272,22 218,78 192,78"/></g></svg>
+            <span class="brand__sub">STUDIO</span>
+          </a>
+          <p class="footer__tag">Leinze Studio. Roblox assets and tools by Eiserleinze.</p>
+        </div>
+        <div>
+          <h4>Site</h4>
+          <ul>
+            <li><a href="index.html#products">Products</a></li>
+            <li><a href="index.html#free">Free Assets</a></li>
+            <li><a href="tools.html">Tools</a></li>
+            <li><a href="license.html">License &amp; Terms</a></li>
+            <li><a href="register.html">Register</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Elsewhere</h4>
+          <ul id="socials"></ul>
+          <h4 style="margin-top:20px">Contact</h4>
+          <a data-link="email" href="#">email</a>
+        </div>
+      </div>
+      <div class="footer__bottom">
+        <span class="mono">© <span id="year"></span> LNZ.STD — Leinze Studio</span>
+        <span class="mono">Not affiliated with Roblox Corporation</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="assets/js/data.js"></script>
+  <script src="assets/js/main.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lamejs@1.2.1/lame.min.js"></script>
+  <script src="assets/js/tools.js"></script>
+</body>
+</html>
