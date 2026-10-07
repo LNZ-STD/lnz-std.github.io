@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Profile — LNZ.STD</title>
+  <meta name="description" content="Your LNZ.STD member profile and upload library.">
+  <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;1,9..144,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="nav">
+    <div class="wrap">
+      <a class="brand" href="index.html" aria-label="LNZ Studio — home">
+        <svg class="brand__mark" viewBox="0 0 272 100" aria-hidden="true"><g fill="currentColor"><polygon points="0,0 22,0 22,78 80,78 80,100 0,100"/><polygon points="96,0 118,0 118,100 96,100"/><polygon points="154,0 176,0 176,100 154,100"/><polygon points="96,0 122,0 176,100 150,100"/><polygon points="192,0 272,0 272,22 192,22"/><polygon points="192,78 272,78 272,100 192,100"/><polygon points="246,22 272,22 218,78 192,78"/></g></svg>
+        <span class="brand__sub">STUDIO</span>
+      </a>
+      <button class="nav__toggle" type="button" aria-expanded="false" aria-controls="nav-links">Menu</button>
+      <ul class="nav__links" id="nav-links">
+        <li><a href="index.html#products">Products</a></li>
+        <li><a href="index.html#free">Free Assets</a></li>
+        <li><a href="tools.html">Tools</a></li>
+        <li><a href="license.html">License</a></li>
+        <li><a href="index.html#about">About</a></li>
+        <li><a href="register.html" aria-current="page">Register</a></li>
+      </ul>
+    </div>
+  </header>
+
+  <main>
+    <section class="page-head">
+      <div class="wrap">
+        <span class="mono">Member</span>
+        <h1>Profile</h1>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="wrap">
+        <div class="locked" id="profile-locked" hidden>
+          <span class="mono accent">Not signed in</span>
+          <h2>Register to get your profile</h2>
+          <p>Your profile keeps every asset you upload with the LNZ.STD tools, organised in folders.</p>
+          <div class="hero__cta">
+            <a class="btn btn--ghost" data-link="discord" href="#" target="_blank" rel="noopener">1. Join Discord ↗</a>
+            <a class="btn btn--accent" href="register.html">2. Register</a>
+          </div>
+        </div>
+
+        <div id="profile" hidden>
+          <div class="profile-card">
+            <div class="profile-card__id">
+              <span class="avatar" id="p-initial" aria-hidden="true"></span>
+              <div>
+                <h2 id="p-username"></h2>
+                <span class="mono" id="p-since"></span>
+              </div>
+            </div>
+            <dl class="facts profile-card__facts" id="p-facts"></dl>
+            <div class="profile-card__quota">
+              <span class="mono">Free uploads left</span>
+              <strong id="p-quota"></strong>
+              <div class="meter"><span id="p-quota-bar"></span></div>
+              <div class="hero__cta">
+                <a class="btn btn--ghost" href="tools.html">Audio</a>
+                <a class="btn btn--ghost" href="decal.html">Image</a>
+                <button class="linklike" type="button" id="sign-out-profile">Sign out</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="library">
+            <aside class="library__side">
+              <div class="file-row">
+                <span class="mono">Folders</span>
+                <button class="linklike" type="button" id="new-folder">+ New folder</button>
+              </div>
+              <ul class="folders" id="folder-list"></ul>
+            </aside>
+
+            <div class="library__main">
+              <div class="library__bar">
+                <h2 id="folder-title">All uploads</h2>
+                <div class="library__actions" id="folder-actions" hidden>
+                  <button class="linklike" type="button" id="rename-folder">Rename</button>
+                  <button class="linklike" type="button" id="delete-folder">Delete folder</button>
+                </div>
+              </div>
+              <div class="library__filters">
+                <div class="seg" role="group" aria-label="Filter by type">
+                  <button type="button" data-type="all" aria-pressed="true">All</button>
+                  <button type="button" data-type="audio" aria-pressed="false">Audio</button>
+                  <button type="button" data-type="image" aria-pressed="false">Image</button>
+                </div>
+                <input class="search" id="search" type="search" placeholder="Search name or ID" aria-label="Search uploads">
+              </div>
+              <div class="items" id="items"></div>
+              <div class="empty" id="empty" hidden>
+                <p id="empty-text"></p>
+                <div class="hero__cta">
+                  <a class="btn btn--accent" href="tools.html">Upload audio</a>
+                  <a class="btn btn--ghost" href="decal.html">Upload image</a>
+                </div>
+              </div>
+              <p class="hint">Your library is saved in this browser for now. Removing an item here doesn't delete it from Roblox.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap">
+      <div class="footer__grid">
+        <div>
+          <a class="brand" href="index.html" aria-label="LNZ Studio — home">
+            <svg class="brand__mark" viewBox="0 0 272 100" aria-hidden="true"><g fill="currentColor"><polygon points="0,0 22,0 22,78 80,78 80,100 0,100"/><polygon points="96,0 118,0 118,100 96,100"/><polygon points="154,0 176,0 176,100 154,100"/><polygon points="96,0 122,0 176,100 150,100"/><polygon points="192,0 272,0 272,22 192,22"/><polygon points="192,78 272,78 272,100 192,100"/><polygon points="246,22 272,22 218,78 192,78"/></g></svg>
+            <span class="brand__sub">STUDIO</span>
+          </a>
+          <p class="footer__tag">Leinze Studio. Roblox assets and tools by Eiserleinze.</p>
+        </div>
+        <div>
+          <h4>Site</h4>
+          <ul>
+            <li><a href="index.html#products">Products</a></li>
+            <li><a href="index.html#free">Free Assets</a></li>
+            <li><a href="tools.html">Tools</a></li>
+            <li><a href="license.html">License &amp; Terms</a></li>
+            <li><a href="register.html">Register</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Elsewhere</h4>
+          <ul id="socials"></ul>
+          <h4 style="margin-top:20px">Contact</h4>
+          <a data-link="email" href="#">email</a>
+        </div>
+      </div>
+      <div class="footer__bottom">
+        <span class="mono">© <span id="year"></span> LNZ.STD — Leinze Studio</span>
+        <span class="mono">Not affiliated with Roblox Corporation</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="assets/js/data.js"></script>
+  <script src="assets/js/main.js"></script>
+  <script src="assets/js/roblox.js"></script>
+  <script src="assets/js/profile.js"></script>
+</body>
+</html>

@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Audio Uploader — LNZ.STD</title>
-  <meta name="description" content="Cut, change speed and pitch, add a cover and upload audio to Roblox. Free for LNZ.STD members.">
+  <title>Image Uploader — LNZ.STD</title>
+  <meta name="description" content="Crop, resize and upload images to Roblox as decals. Free for LNZ.STD members.">
   <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -34,8 +34,8 @@
     <section class="page-head">
       <div class="wrap">
         <span class="mono">Developer tools — free for members</span>
-        <h1>Audio Uploader</h1>
-        <p class="page-head__lede">Cut, change speed and pitch, add a cover, then upload straight to Roblox and get your asset IDs.</p>
+        <h1>Image Uploader</h1>
+        <p class="page-head__lede">Crop and resize an image, upload it to Roblox as a decal and get the ID back.</p>
       </div>
     </section>
 
@@ -54,8 +54,8 @@
         <div id="tool" hidden>
           <div class="tool-bar">
             <nav class="tool-tabs" aria-label="Tools">
-              <a href="tools.html" aria-current="page">Audio</a>
-              <a href="decal.html">Image / Decal</a>
+              <a href="tools.html">Audio</a>
+              <a href="decal.html" aria-current="page">Image / Decal</a>
             </nav>
             <span class="quota"><span class="mono" id="tool-member"></span> · <strong id="quota-left">0</strong> / <span id="quota-total">0</span> free uploads left</span>
           </div>
@@ -63,10 +63,10 @@
           <div class="tool-layout">
             <div class="tool-main">
               <div class="panel">
-                <div class="panel__head"><span class="step__n">01</span><h2>Audio</h2></div>
-                <label class="dropzone" id="audio-drop">
-                  <input type="file" id="audio-file" accept=".mp3,.ogg,audio/mpeg,audio/ogg" hidden>
-                  <span class="dropzone__title">Drop an MP3 or OGG here</span>
+                <div class="panel__head"><span class="step__n">01</span><h2>Image</h2></div>
+                <label class="dropzone" id="image-drop">
+                  <input type="file" id="image-file" accept="image/png,image/jpeg,image/webp,image/bmp" hidden>
+                  <span class="dropzone__title">Drop a PNG, JPG or WEBP here</span>
                   <span class="dropzone__sub">or click to choose a file</span>
                 </label>
                 <p class="form__msg form__msg--err" id="file-error" hidden></p>
@@ -75,72 +75,38 @@
                     <div><strong id="file-name"></strong> <span class="mono" id="file-meta"></span></div>
                     <button class="linklike" type="button" id="change-file">Change file</button>
                   </div>
-                  <canvas class="wave" id="wave" aria-label="Waveform. Drag the handles to cut."></canvas>
-                  <div class="trim-row">
-                    <div class="field">
-                      <label for="trim-start">Start (sec)</label>
-                      <input id="trim-start" type="number" step="0.1" min="0">
-                    </div>
-                    <button class="btn btn--accent" id="play" type="button" disabled>▶ Play</button>
-                    <div class="field">
-                      <label for="trim-end">End (sec)</label>
-                      <input id="trim-end" type="number" step="0.1" min="0">
-                    </div>
-                  </div>
-                  <p class="hint">Drag the white handles to cut. Play previews the result with all your settings.</p>
+                  <div class="preview-box"><canvas id="preview" aria-label="Image preview"></canvas></div>
                 </div>
               </div>
 
               <div class="panel">
-                <div class="panel__head"><span class="step__n">02</span><h2>Speed &amp; pitch</h2></div>
-                <div class="slider">
-                  <label for="speed">Speed</label>
-                  <input type="range" id="speed" min="0.5" max="2" step="0.01" value="1">
-                  <output id="speed-out">1.00×</output>
-                </div>
-                <div class="slider">
-                  <label for="pitch">Pitch</label>
-                  <input type="range" id="pitch" min="-12" max="12" step="1" value="0">
-                  <output id="pitch-out">0 st</output>
-                </div>
-                <label class="check">
-                  <input type="checkbox" id="link" checked>
-                  <span>Link pitch to speed (classic / nightcore). Untick to change speed and pitch separately.</span>
-                </label>
-                <div class="adjust-row">
+                <div class="panel__head"><span class="step__n">02</span><h2>Crop &amp; size</h2></div>
+                <div class="adjust-row adjust-row--2">
                   <div class="field">
-                    <label for="fade-in">Fade in (sec)</label>
-                    <input id="fade-in" type="number" min="0" max="10" step="0.1" value="0">
+                    <label for="crop">Crop</label>
+                    <select id="crop">
+                      <option value="original">Original ratio</option>
+                      <option value="square">Square (centre)</option>
+                    </select>
                   </div>
                   <div class="field">
-                    <label for="fade-out">Fade out (sec)</label>
-                    <input id="fade-out" type="number" min="0" max="10" step="0.1" value="0">
-                  </div>
-                  <button class="btn btn--ghost" type="button" id="reset-adjust">Reset</button>
-                </div>
-                <p class="mono" id="out-length"></p>
-                <p class="mono accent" id="render-status" aria-live="polite"></p>
-              </div>
-
-              <div class="panel">
-                <div class="panel__head"><span class="step__n">03</span><h2>Cover <span class="opt">optional</span></h2></div>
-                <div class="cover-row">
-                  <label class="dropzone dropzone--cover" id="cover-drop">
-                    <input type="file" id="cover-file" accept="image/png,image/jpeg,image/webp" hidden>
-                    <img id="cover-preview" alt="Cover preview" hidden>
-                    <span class="dropzone__sub" id="cover-empty">Drop an image<br>or click</span>
-                  </label>
-                  <div>
-                    <p class="hint">Cropped to a 512×512 square. Roblox audio has no built-in cover, so the image is uploaded as its own asset and you get a separate Image ID for your Music System.</p>
-                    <button class="btn btn--ghost" id="cover-remove" type="button" hidden>Remove cover</button>
+                    <label for="size">Max size</label>
+                    <select id="size">
+                      <option value="1024">1024 px (Roblox max)</option>
+                      <option value="512">512 px</option>
+                      <option value="256">256 px</option>
+                      <option value="128">128 px</option>
+                    </select>
                   </div>
                 </div>
+                <p class="mono" id="out-info"></p>
+                <p class="hint">Transparent PNGs keep their transparency. Roblox shrinks anything bigger than 1024 px.</p>
               </div>
             </div>
 
             <aside class="tool-side">
               <form class="panel form-panel" id="upload-form" autocomplete="off">
-                <div class="panel__head"><span class="step__n">04</span><h2>Upload to Roblox</h2></div>
+                <div class="panel__head"><span class="step__n">03</span><h2>Upload to Roblox</h2></div>
                 <div class="field">
                   <label for="roblox-user">Roblox username</label>
                   <input id="roblox-user" name="roblox-user" required>
@@ -172,8 +138,8 @@
                   <small>Every upload is saved to your <a href="profile.html">profile library</a>.</small>
                 </div>
                 <button class="btn btn--accent" type="submit" id="upload-btn" disabled>Upload to Roblox</button>
-                <button class="btn btn--ghost" type="button" id="download-btn" disabled>Download MP3 only</button>
-                <p class="hint">Each Roblox upload uses 1 of your free uploads (shared by all tools). Downloading the MP3 is unlimited.</p>
+                <button class="btn btn--ghost" type="button" id="download-btn" disabled>Download PNG only</button>
+                <p class="hint">Each Roblox upload uses 1 of your free uploads (shared by all tools). Downloading the PNG is unlimited.</p>
                 <div class="log" id="log" aria-live="polite"></div>
               </form>
 
@@ -181,7 +147,7 @@
                 <span class="mono accent">Uploaded</span>
                 <h3 id="result-name"></h3>
                 <div id="result-ids"></div>
-                <p class="hint">New audio can take a few minutes to pass Roblox moderation before it plays in game.</p>
+                <p class="hint">New images can take a few minutes to pass Roblox moderation. If an ImageLabel stays blank, paste the Decal ID into a Decal in Studio and use the image ID it gives you.</p>
               </div>
 
               <details class="panel help">
@@ -242,8 +208,7 @@
 
   <script src="assets/js/data.js"></script>
   <script src="assets/js/main.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/lamejs@1.2.1/lame.min.js"></script>
   <script src="assets/js/roblox.js"></script>
-  <script src="assets/js/tools.js"></script>
+  <script src="assets/js/decal.js"></script>
 </body>
 </html>
