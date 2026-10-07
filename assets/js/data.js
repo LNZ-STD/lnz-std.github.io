@@ -11,6 +11,9 @@ const SITE = {
   // Your store on the external platform (Gumroad / Lemon Squeezy / Payhip)
   storeUrl: "https://eiserleinze.gumroad.com",
   contactEmail: "hello@lnz.studio",
+  // Upload relay for the Audio Uploader (your Cloudflare Worker URL, see worker/README.md).
+  // Leave empty until the worker is deployed — editing and MP3 download still work.
+  uploadProxy: "",
   socials: [
     { label: "Discord", url: DISCORD },
     { label: "Roblox", url: "https://www.roblox.com/" },
@@ -75,3 +78,9 @@ const FREE_ASSETS = [
     downloadUrl: "#",
   },
 ];
+
+// Developer tools
+const TOOLS = {
+  // Free Roblox uploads per registered member (who joined the Discord)
+  freeUploads: 20,
+};
