@@ -13,7 +13,7 @@ const SITE = {
   contactEmail: "hello@lnz.studio",
   // Upload relay for the Audio Uploader (your Cloudflare Worker URL, see worker/README.md).
   // Leave empty until the worker is deployed — editing and MP3 download still work.
-  uploadProxy: "",
+  uploadProxy: "https://lnz-upload.fmubin463s.workers.dev",
   socials: [
     { label: "Discord", url: DISCORD },
     { label: "Roblox", url: "https://www.roblox.com/" },
