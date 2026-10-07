@@ -8,8 +8,7 @@
  * small relay (worker/roblox-proxy.js) because Roblox's API can't be called
  * from a web page directly.
  *
- * NOTE: the free upload allowance is tracked in localStorage, like
- * membership. Enforce it in the relay once real accounts exist.
+ * Shared upload, allowance and library code lives in roblox.js.
  */
 
 // Roblox audio upload limits at the time of writing — check Creator Hub docs if uploads get rejected.
@@ -20,12 +19,6 @@ const MP3_KBPS = 192;
 const COVER_SIZE = 512;
 const MIN_SELECTION = 0.1;
 
-const USAGE_PREFIX = "lnz_tool_uploads:";
-const HISTORY_PREFIX = "lnz_tool_history:";
-const CREDS_KEY = "lnz_tool_creds";
-
-const $ = (id) => document.getElementById(id);
-const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const nextFrame = () => new Promise((r) => requestAnimationFrame(() => setTimeout(r)));
 
 const state = {
@@ -44,27 +37,6 @@ const state = {
   busy: false,
 };
 
-/* ---------- storage helpers ---------- */
-
-function store(key, value) {
-  try {
-    if (value === null) localStorage.removeItem(key);
-    else localStorage.setItem(key, JSON.stringify(value));
-  } catch {}
-}
-
-function load(key, fallback) {
-  try {
-    const v = JSON.parse(localStorage.getItem(key));
-    return v ?? fallback;
-  } catch {
-    return fallback;
-  }
-}
-
-const usedUploads = (m) => load(USAGE_PREFIX + m.username, 0);
-const remainingUploads = (m) => Math.max(0, TOOLS.freeUploads - usedUploads(m));
-
 /* ---------- UI helpers ---------- */
 
 function fmtTime(sec) {
@@ -73,25 +45,9 @@ function fmtTime(sec) {
   return `${m}:${s.toFixed(1).padStart(4, "0")}`;
 }
 
-function log(text, kind = "") {
-  const line = document.createElement("p");
-  line.className = `log__line ${kind ? "log__line--" + kind : ""}`;
-  line.textContent = text;
-  $("log").append(line);
-  $("log").scrollTop = $("log").scrollHeight;
-}
-
 function setBusy(busy) {
   state.busy = busy;
   ["upload-btn", "download-btn", "play"].forEach((id) => ($(id).disabled = busy || !state.source));
-}
-
-function updateQuota() {
-  const member = Member.get();
-  const left = remainingUploads(member);
-  $("quota-left").textContent = left;
-  $("quota-total").textContent = TOOLS.freeUploads;
-  $("upload-btn").textContent = left > 0 ? `Upload to Roblox (${left} left)` : "No free uploads left";
 }
 
 function settings() {
@@ -464,10 +420,6 @@ async function encodeMp3(buf) {
   return new Blob(parts, { type: "audio/mpeg" });
 }
 
-function safeFileName(name) {
-  return (name || "audio").replace(/[^\w\- ]+/g, "").trim().replace(/\s+/g, "-") || "audio";
-}
-
 async function buildMp3() {
   const buf = await getRendered();
   if (buf.duration > ROBLOX_AUDIO_MAX_SECONDS) {
@@ -483,7 +435,7 @@ async function downloadMp3() {
     const blob = await buildMp3();
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
-    a.download = `${safeFileName($("asset-name").value || state.fileName)}.mp3`;
+    a.download = `${safeFileName($("asset-name").value || state.fileName || "audio")}.mp3`;
     a.click();
     setTimeout(() => URL.revokeObjectURL(a.href), 10000);
     log(`Downloaded MP3 (${(blob.size / 1024 / 1024).toFixed(1)} MB).`, "ok");
@@ -521,116 +473,21 @@ function removeCover() {
   $("cover-remove").hidden = true;
 }
 
-/* ---------- Roblox upload (via relay) ---------- */
-
-const relay = () => SITE.uploadProxy.replace(/\/+$/, "");
-
-async function readJson(res) {
-  try {
-    return await res.json();
-  } catch {
-    return {};
-  }
-}
-
-function robloxError(data, res) {
-  const msg = data.message || data.errors?.[0]?.message || data.error?.message || `Roblox returned error ${res.status}.`;
-  if (res.status === 401 || res.status === 403) {
-    return `${msg} Check the API key, that it has Assets read + write permission, and that 0.0.0.0/0 is in its allowed IPs.`;
-  }
-  return msg;
-}
-
-async function resolveUser(username) {
-  if (/^\d+$/.test(username)) return { id: username, name: username };
-  const res = await fetch(`${relay()}/users/resolve`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ username }),
-  });
-  const data = await readJson(res);
-  if (!res.ok) throw new Error(data.message || `Couldn't find Roblox user "${username}".`);
-  return data;
-}
-
-async function createAsset(type, { userId, apiKey, name, description, blob, filename }) {
-  const form = new FormData();
-  form.append(
-    "request",
-    JSON.stringify({
-      assetType: type,
-      displayName: name,
-      description,
-      creationContext: { creator: { userId: String(userId) } },
-    })
-  );
-  form.append("fileContent", blob, filename);
-
-  const res = await fetch(`${relay()}/assets`, {
-    method: "POST",
-    headers: { "X-Roblox-Api-Key": apiKey },
-    body: form,
-  });
-  const data = await readJson(res);
-  if (!res.ok) throw new Error(robloxError(data, res));
-  if (data.done && data.response?.assetId) return data.response.assetId;
-
-  const opId = data.operationId || (data.path || "").split("/").pop();
-  if (!opId) throw new Error("Roblox didn't return an operation to track.");
-  return pollOperation(opId, apiKey);
-}
-
-async function pollOperation(opId, apiKey) {
-  for (let attempt = 0; attempt < 60; attempt++) {
-    await sleep(2000);
-    const res = await fetch(`${relay()}/operations/${encodeURIComponent(opId)}`, {
-      headers: { "X-Roblox-Api-Key": apiKey },
-    });
-    const data = await readJson(res);
-    if (!res.ok) throw new Error(robloxError(data, res));
-    if (data.done) {
-      if (data.error) throw new Error(data.error.message || "Roblox rejected the upload.");
-      if (data.response?.assetId) return data.response.assetId;
-      throw new Error("Upload finished but Roblox didn't return an asset ID.");
-    }
-  }
-  throw new Error("Roblox is still processing. Check Creator Hub → Development Items in a few minutes.");
-}
-
-function saveCreds(username, apiKey, remember) {
-  store(CREDS_KEY, { username, apiKey: remember ? apiKey : "" });
-}
+/* ---------- upload ---------- */
 
 async function upload(e) {
   e.preventDefault();
   if (!state.source || state.busy) return;
+  const form = readUploadForm();
+  if (!form) return;
   const member = Member.get();
-  $("log").innerHTML = "";
-
-  if (remainingUploads(member) <= 0) {
-    log(`You've used all ${TOOLS.freeUploads} free uploads. You can still download the MP3 and upload it in Creator Hub.`, "err");
-    return;
-  }
-  if (!SITE.uploadProxy) {
-    log("Uploads aren't switched on yet — the upload server hasn't been set up. You can still download the MP3 and upload it in Creator Hub.", "err");
-    return;
-  }
-
-  const username = $("roblox-user").value.trim();
-  const apiKey = $("api-key").value.trim();
-  const name = $("asset-name").value.trim().slice(0, 50);
-  const description = $("asset-desc").value.trim().slice(0, 1000);
-  if (!username || !apiKey || !name) {
-    log("Fill in your Roblox username, Open Cloud API key and an asset name.", "err");
-    return;
-  }
-  saveCreds(username, apiKey, $("remember").checked);
+  const { apiKey, name, description, folderId } = form;
 
   setBusy(true);
   $("result").hidden = true;
   try {
     log("Looking up your Roblox account…");
-    const user = await resolveUser(username);
+    const user = await resolveUser(form.username);
     log(`Found ${user.name} (ID ${user.id}).`, "ok");
 
     log("Rendering and encoding MP3…");
@@ -640,15 +497,15 @@ async function upload(e) {
     log("Uploading audio to Roblox… (moderation can take a minute)");
     const base = safeFileName(name);
     const audioId = await createAsset("Audio", { userId: user.id, apiKey, name, description, blob: mp3, filename: `${base}.mp3` });
-    store(USAGE_PREFIX + member.username, usedUploads(member) + 1);
+    countUpload(member);
     updateQuota();
     log(`Audio uploaded: ${audioId}`, "ok");
 
-    let imageId = null;
+    let coverId = null;
     if (state.coverBlob) {
       log("Uploading cover image…");
       try {
-        imageId = await createAsset("Decal", {
+        coverId = await createAsset("Decal", {
           userId: user.id,
           apiKey,
           name: `${name} cover`.slice(0, 50),
@@ -656,17 +513,17 @@ async function upload(e) {
           blob: state.coverBlob,
           filename: `${base}-cover.png`,
         });
-        log(`Cover uploaded: ${imageId}`, "ok");
+        log(`Cover uploaded: ${coverId}`, "ok");
       } catch (err) {
         log(`Cover upload failed: ${err.message} The audio is uploaded fine.`, "err");
       }
     }
 
-    showResult({ name, audioId, imageId });
-    const history = load(HISTORY_PREFIX + member.username, []);
-    history.unshift({ name, audioId, imageId, at: new Date().toISOString() });
-    store(HISTORY_PREFIX + member.username, history.slice(0, 20));
-    renderHistory();
+    const thumb = state.coverBlob ? await makeThumb(state.coverBlob) : null;
+    Library.addItem(member, { type: "audio", name, assetId: audioId, coverId, thumb, folderId: folderId || null });
+    log("Saved to your library.", "ok");
+    showResult({ name, audioId, coverId });
+    renderRecent("audio");
   } catch (err) {
     log(err.message, "err");
   } finally {
@@ -674,78 +531,19 @@ async function upload(e) {
   }
 }
 
-function idRow(label, id) {
-  const row = document.createElement("div");
-  row.className = "id-row";
-  const text = document.createElement("div");
-  text.innerHTML = `<span class="mono"></span><code></code>`;
-  text.querySelector(".mono").textContent = label;
-  text.querySelector("code").textContent = `rbxassetid://${id}`;
-  const btn = document.createElement("button");
-  btn.type = "button";
-  btn.className = "btn btn--ghost";
-  btn.textContent = "Copy ID";
-  btn.addEventListener("click", async () => {
-    try {
-      await navigator.clipboard.writeText(String(id));
-      btn.textContent = "Copied";
-    } catch {
-      btn.textContent = id;
-    }
-    setTimeout(() => (btn.textContent = "Copy ID"), 1500);
-  });
-  row.append(text, btn);
-  return row;
-}
-
-function showResult({ name, audioId, imageId }) {
+function showResult({ name, audioId, coverId }) {
   const box = $("result-ids");
   box.innerHTML = "";
   $("result-name").textContent = name;
   box.append(idRow("Audio ID", audioId));
-  if (imageId) box.append(idRow("Image (decal) ID", imageId));
+  if (coverId) box.append(idRow("Cover (decal) ID", coverId));
   $("result").hidden = false;
-}
-
-function renderHistory() {
-  const member = Member.get();
-  const history = load(HISTORY_PREFIX + member.username, []);
-  const list = $("history");
-  list.innerHTML = "";
-  $("history-panel").hidden = history.length === 0;
-  for (const h of history) {
-    const li = document.createElement("li");
-    const title = document.createElement("strong");
-    title.textContent = h.name;
-    const ids = document.createElement("span");
-    ids.className = "mono";
-    ids.textContent = `Audio ${h.audioId}${h.imageId ? ` · Image ${h.imageId}` : ""}`;
-    li.append(title, ids);
-    list.append(li);
-  }
 }
 
 /* ---------- wiring ---------- */
 
-function setupDrop(zoneId, inputId, onFile) {
-  const zone = $(zoneId);
-  const input = $(inputId);
-  input.addEventListener("change", () => input.files[0] && onFile(input.files[0]));
-  zone.addEventListener("dragover", (e) => {
-    e.preventDefault();
-    zone.classList.add("is-over");
-  });
-  zone.addEventListener("dragleave", () => zone.classList.remove("is-over"));
-  zone.addEventListener("drop", (e) => {
-    e.preventDefault();
-    zone.classList.remove("is-over");
-    const file = e.dataTransfer.files[0];
-    if (file) onFile(file);
-  });
-}
-
 function initTool() {
-  if (!$("tool")) return;
+  if (!$("tool") || !$("audio-drop")) return;
   const member = Member.get();
   if (!member) {
     $("tool-locked").hidden = false;
@@ -754,15 +552,8 @@ function initTool() {
   $("tool").hidden = false;
   $("tool-member").textContent = `Signed in as ${member.username}`;
   updateQuota();
-  renderHistory();
-
-  const creds = load(CREDS_KEY, {});
-  if (creds.username) $("roblox-user").value = creds.username;
-  else if (member.roblox) $("roblox-user").value = member.roblox;
-  if (creds.apiKey) {
-    $("api-key").value = creds.apiKey;
-    $("remember").checked = true;
-  }
+  renderRecent("audio");
+  initUploadForm();
 
   setupDrop("audio-drop", "audio-file", loadAudio);
   setupDrop("cover-drop", "cover-file", loadCover);
@@ -785,14 +576,6 @@ function initTool() {
   $("play").addEventListener("click", togglePlay);
   $("download-btn").addEventListener("click", downloadMp3);
   $("upload-form").addEventListener("submit", upload);
-  $("toggle-key").addEventListener("click", () => {
-    const input = $("api-key");
-    input.type = input.type === "password" ? "text" : "password";
-    $("toggle-key").textContent = input.type === "password" ? "Show" : "Hide";
-  });
-  $("remember").addEventListener("change", () => {
-    if (!$("remember").checked) saveCreds($("roblox-user").value.trim(), "", false);
-  });
 
   window.addEventListener("resize", () => state.source && sizeCanvas());
   refreshAdjustLabels();

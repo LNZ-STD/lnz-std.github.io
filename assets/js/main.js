@@ -174,6 +174,17 @@ function setupRegisterForm() {
   });
 }
 
+// Signed-in members get "Profile" in the nav instead of "Register"
+function setupMemberNav() {
+  if (!Member.get()) return;
+  document.querySelectorAll('.nav__links a[href="register.html"], .footer a[href="register.html"]').forEach((a) => {
+    a.href = "profile.html";
+    a.textContent = "Profile";
+    if (a.closest(".nav__links") && location.pathname.endsWith("/profile.html")) a.setAttribute("aria-current", "page");
+    else a.removeAttribute("aria-current");
+  });
+}
+
 function setupNav() {
   const toggle = document.querySelector(".nav__toggle");
   const menu = document.querySelector(".nav__links");
@@ -192,6 +203,7 @@ function setupNav() {
 
 document.addEventListener("DOMContentLoaded", () => {
   applySiteLinks();
+  setupMemberNav();
   setupNav();
   renderProducts();
   renderFreeAssets();
