@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Register — LNZ.STD</title>
+  <meta name="description" content="Register on LNZ.STD to unlock free Roblox assets.">
+  <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;1,9..144,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="nav">
+    <div class="wrap">
+      <a class="brand" href="index.html" aria-label="LNZ Studio — home">
+        <svg class="brand__mark" viewBox="0 0 272 100" aria-hidden="true"><g fill="currentColor"><polygon points="0,0 22,0 22,78 80,78 80,100 0,100"/><polygon points="96,0 118,0 118,100 96,100"/><polygon points="154,0 176,0 176,100 154,100"/><polygon points="96,0 122,0 176,100 150,100"/><polygon points="192,0 272,0 272,22 192,22"/><polygon points="192,78 272,78 272,100 192,100"/><polygon points="246,22 272,22 218,78 192,78"/></g></svg>
+        <span class="brand__sub">STUDIO</span>
+      </a>
+      <button class="nav__toggle" type="button" aria-expanded="false" aria-controls="nav-links">Menu</button>
+      <ul class="nav__links" id="nav-links">
+        <li><a href="index.html#products">Products</a></li>
+        <li><a href="index.html#free">Free Assets</a></li>
+        <li><a href="license.html">License</a></li>
+        <li><a href="index.html#about">About</a></li>
+        <li><a href="register.html" aria-current="page">Register</a></li>
+      </ul>
+    </div>
+  </header>
+
+  <main>
+    <section class="page-head">
+      <div class="wrap">
+        <span class="mono">Free assets — Step 02</span>
+        <h1>Register</h1>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="wrap form-layout">
+        <div class="prose">
+          <h2>Before you start</h2>
+          <p>Free assets are for members of the LNZ Studio community. Two things are required:</p>
+          <ul>
+            <li><strong>Join our Discord server</strong> first.</li>
+            <li><strong>Register here</strong> with your Roblox and Discord usernames.</li>
+          </ul>
+          <p><a class="btn btn--accent" data-link="discord" href="#" target="_blank" rel="noopener">Join Discord ↗</a></p>
+          <p class="note">Preview build: registration is only saved in this browser for now. Real accounts come later.</p>
+        </div>
+
+        <form class="form" id="register-form">
+          <div class="field">
+            <label for="username">Username</label>
+            <input id="username" name="username" required autocomplete="username">
+          </div>
+          <div class="field">
+            <label for="email">Email</label>
+            <input id="email" name="email" type="email" required autocomplete="email">
+          </div>
+          <div class="field">
+            <label for="roblox">Roblox username</label>
+            <input id="roblox" name="roblox" required>
+          </div>
+          <div class="field">
+            <label for="discord">Discord username</label>
+            <input id="discord" name="discord" required>
+            <small>Must match your account in the LNZ Studio server.</small>
+          </div>
+          <div class="field">
+            <label for="password">Password</label>
+            <input id="password" name="password" type="password" minlength="8" required autocomplete="new-password">
+          </div>
+          <label class="check">
+            <input type="checkbox" name="joinedDiscord" value="yes">
+            <span>I have joined the LNZ Studio Discord server.</span>
+          </label>
+          <label class="check">
+            <input type="checkbox" name="agree" value="yes" required>
+            <span>I agree to the <a href="license.html#free-terms">free asset terms</a>.</span>
+          </label>
+          <button class="btn btn--accent" type="submit">Create account</button>
+          <p class="form__msg" id="form-msg" role="status"></p>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap">
+      <div class="footer__grid">
+        <div>
+          <a class="brand" href="index.html" aria-label="LNZ Studio — home">
+            <svg class="brand__mark" viewBox="0 0 272 100" aria-hidden="true"><g fill="currentColor"><polygon points="0,0 22,0 22,78 80,78 80,100 0,100"/><polygon points="96,0 118,0 118,100 96,100"/><polygon points="154,0 176,0 176,100 154,100"/><polygon points="96,0 122,0 176,100 150,100"/><polygon points="192,0 272,0 272,22 192,22"/><polygon points="192,78 272,78 272,100 192,100"/><polygon points="246,22 272,22 218,78 192,78"/></g></svg>
+            <span class="brand__sub">STUDIO</span>
+          </a>
+          <p class="footer__tag">Leinze Studio. Roblox assets and tools by Eiserleinze.</p>
+        </div>
+        <div>
+          <h4>Site</h4>
+          <ul>
+            <li><a href="index.html#products">Products</a></li>
+            <li><a href="index.html#free">Free Assets</a></li>
+            <li><a href="license.html">License &amp; Terms</a></li>
+            <li><a href="register.html">Register</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Elsewhere</h4>
+          <ul id="socials"></ul>
+          <h4 style="margin-top:20px">Contact</h4>
+          <a data-link="email" href="#">email</a>
+        </div>
+      </div>
+      <div class="footer__bottom">
+        <span class="mono">© <span id="year"></span> LNZ.STD — Leinze Studio</span>
+        <span class="mono">Not affiliated with Roblox Corporation</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="assets/js/data.js"></script>
+  <script src="assets/js/main.js"></script>
+</body>
+</html>
