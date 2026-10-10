@@ -9,7 +9,14 @@ Plugin untuk mengubah file **.svg** (logo, ikon, teks yang sudah jadi path) menj
 2. Di **Explorer**, klik kanan **ServerStorage** → **Insert Object** → **Script**.
 3. Hapus isi script, lalu tempel seluruh isi `SVGTo3D.plugin.lua`.
 4. Klik kanan script tersebut → **Save as Local Plugin...** → Save.
-5. Tab **Plugins** sekarang punya tombol **SVG to 3D**. Script di ServerStorage boleh dihapus.
+5. Panel **SVG to 3D Logo** langsung terbuka, dan tab **Plugins** punya tombol **SVG to 3D**.
+   Script di ServerStorage boleh dihapus.
+
+**Cara lain:** di tab **Plugins**, klik **Plugins Folder**, salin file `SVGTo3D.plugin.lua`
+ke folder itu, lalu tutup dan buka lagi Roblox Studio.
+
+**Plugin tidak muncul?** Buka **View → Output**. Kalau plugin termuat, ada tulisan
+`[SVG to 3D] Plugin dimuat`. Kalau ada tulisan merah, salin pesan error-nya.
 
 ## Cara pakai
 

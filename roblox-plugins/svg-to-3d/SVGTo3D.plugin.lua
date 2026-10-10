@@ -1193,7 +1193,7 @@ toggleButton.ClickableWhenViewportHidden = true
 
 local widget = plugin:CreateDockWidgetPluginGui(
 	"LNZ_SVGTo3D",
-	DockWidgetPluginGuiInfo.new(Enum.InitialDockState.Right, false, false, 300, 560, 260, 360)
+	DockWidgetPluginGuiInfo.new(Enum.InitialDockState.Float, true, false, 320, 560, 260, 360)
 )
 widget.Title = "SVG to 3D Logo"
 widget.Name = "SVGTo3D"
@@ -1645,3 +1645,6 @@ local function generate()
 end
 
 generateButton.MouseButton1Click:Connect(generate)
+
+toggleButton:SetActive(widget.Enabled)
+print("[SVG to 3D] Plugin dimuat. Buka lewat tab Plugins -> SVG to 3D.")
