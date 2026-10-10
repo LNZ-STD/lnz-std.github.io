@@ -1148,22 +1148,35 @@ function SvgCore.extrude(poly, depth)
 	for _, t in ipairs(poly.tris) do
 		tris[#tris + 1] = { off + t[1], off + t[3], off + t[2] }
 	end
-	local function wall(ring)
-		local n = #ring
-		for i = 1, n do
-			local p, q = ring[i], ring[i % n + 1]
-			local b = #verts
-			verts[b + 1] = { p[1], p[2], -hz }
-			verts[b + 2] = { q[1], q[2], -hz }
-			verts[b + 3] = { q[1], q[2], hz }
-			verts[b + 4] = { p[1], p[2], hz }
-			tris[#tris + 1] = { b + 1, b + 2, b + 3 }
-			tris[#tris + 1] = { b + 1, b + 3, b + 4 }
+	local function wall(p, q)
+		local b = #verts
+		verts[b + 1] = { p[1], p[2], -hz }
+		verts[b + 2] = { q[1], q[2], -hz }
+		verts[b + 3] = { q[1], q[2], hz }
+		verts[b + 4] = { p[1], p[2], hz }
+		tris[#tris + 1] = { b + 1, b + 2, b + 3 }
+		tris[#tris + 1] = { b + 1, b + 3, b + 4 }
+	end
+	-- Dinding dibangun dari tepi triangulasi (sisi yang hanya dipakai satu segitiga),
+	-- jadi depan, belakang, dan samping selalu menyambung rapat.
+	local function key(p)
+		return string.format("%.6f,%.6f", p[1], p[2])
+	end
+	local used = {}
+	for _, t in ipairs(poly.tris) do
+		for k = 1, 3 do
+			local a, b = poly.verts[t[k]], poly.verts[t[k % 3 + 1]]
+			local e = key(a) .. "|" .. key(b)
+			used[e] = (used[e] or 0) + 1
 		end
 	end
-	wall(poly.outer)
-	for _, hole in ipairs(poly.holes) do
-		wall(hole)
+	for _, t in ipairs(poly.tris) do
+		for k = 1, 3 do
+			local a, b = poly.verts[t[k]], poly.verts[t[k % 3 + 1]]
+			if not used[key(b) .. "|" .. key(a)] then
+				wall(a, b)
+			end
+		end
 	end
 	return verts, tris
 end

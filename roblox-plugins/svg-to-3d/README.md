@@ -62,3 +62,9 @@ MeshPart asli yang bisa dipakai dan dipublish seperti mesh biasa.
 
 - Pakai SVG yang sederhana. Logo dari Figma/Illustrator/Inkscape biasanya langsung jalan.
 - Kalau jumlah part terlalu banyak, turunkan **Detail kurva** (misalnya 6–8).
+
+## Logo siap pakai sebagai mesh (.obj)
+
+Di folder `branding/` setiap logo juga punya file `.obj` + `.mtl` (lebar 20 studs, tebal 1.5 studs).
+Impor lewat **File → Import 3D** (3D Importer), lalu klik **Insert**. Hasilnya MeshPart asli:
+objek **Putih** dan **Emas** jadi part terpisah, tinggal atur warnanya kalau belum sesuai.
